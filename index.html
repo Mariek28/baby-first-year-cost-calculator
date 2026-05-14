@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Baby First-Year Cost Calculator</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1d2428;
+        --muted: #607078;
+        --line: #d8e1e3;
+        --soft: #f4f7f6;
+        --paper: #ffffff;
+        --mint: #c7eadf;
+        --mint-dark: #2f7a6d;
+        --coral: #f5b7a8;
+        --sky: #b9d9ef;
+        --sun: #f1d17c;
+        --rose: #e8bdd0;
+        --leaf: #b9d8a5;
+        --shadow: 0 18px 45px rgba(55, 75, 78, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #eef5f2;
+        color: var(--ink);
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      .app-shell {
+        min-height: 100vh;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(18px);
+      }
+
+      .topbar-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        background:
+          radial-gradient(circle at 65% 32%, #ffffff 0 9px, transparent 10px),
+          linear-gradient(135deg, var(--mint), var(--sky));
+        border: 1px solid #a9cac6;
+        flex: 0 0 auto;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2vw, 1.75rem);
+        line-height: 1.1;
+        letter-spacing: 0;
+      }
+
+      .tagline {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .button {
+        border: 1px solid #aabbbd;
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 8px;
+        min-height: 42px;
+        padding: 0 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .button.primary {
+        border-color: #24695e;
+        background: #24695e;
+        color: #fff;
+      }
+
+      .button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(47, 122, 109, 0.28);
+        outline-offset: 2px;
+      }
+
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 26px 24px 42px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel,
+      .summary {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .panel {
+        overflow: hidden;
+      }
+
+      .section {
+        padding: 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section:last-child {
+        border-bottom: 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.25;
+        letter-spacing: 0;
+      }
+
+      .hint {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.4;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label,
+      .label {
+        color: #344247;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      input[type="number"],
+      select {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid #b8c8cb;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        padding: 0 12px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--mint-dark);
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .segment {
+        min-height: 42px;
+        border: 1px solid #b8c8cb;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+        padding: 0 10px;
+        color: #344247;
+      }
+
+      .segment[aria-pressed="true"] {
+        background: var(--mint);
+        border-color: var(--mint-dark);
+        color: #173f39;
+        font-weight: 800;
+      }
+
+      .slider-row {
+        display: grid;
+        grid-template-columns: 1fr 86px;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .inline-note {
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.35;
+      }
+
+      .summary {
+        position: sticky;
+        top: 90px;
+        overflow: hidden;
+      }
+
+      .total-block {
+        padding: 24px;
+        background: linear-gradient(135deg, #ffffff 0%, #edf8f5 100%);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .total-label {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .total {
+        margin: 0;
+        font-size: clamp(2.4rem, 5vw, 3.65rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .monthly {
+        margin: 12px 0 0;
+        color: #405056;
+        font-size: 1rem;
+      }
+
+      .chart-wrap {
+        padding: 22px 24px 16px;
+      }
+
+      .bar {
+        height: 18px;
+        display: flex;
+        overflow: hidden;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: var(--soft);
+      }
+
+      .bar span {
+        min-width: 2px;
+      }
+
+      .breakdown {
+        display: grid;
+        gap: 10px;
+        padding: 0 24px 24px;
+      }
+
+      .breakdown-row {
+        display: grid;
+        grid-template-columns: 14px 1fr auto;
+        gap: 10px;
+        align-items: center;
+        color: #39484d;
+        font-size: 0.93rem;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+      }
+
+      .amount {
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .scenario {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #bfd0d2;
+        background: #f8fbfa;
+        color: #405056;
+        font-size: 0.92rem;
+        line-height: 1.45;
+      }
+
+      .summary-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        padding: 0 24px 24px;
+      }
+
+      .toast {
+        min-height: 20px;
+        margin: 10px 24px 0;
+        color: var(--mint-dark);
+        font-size: 0.88rem;
+      }
+
+      @media (max-width: 900px) {
+        .topbar-inner,
+        main {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        main {
+          grid-template-columns: 1fr;
+        }
+
+        .summary {
+          position: static;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .topbar-inner {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .actions {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section {
+          padding: 18px;
+        }
+
+        .segmented {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="brand">
+            <div class="mark" aria-hidden="true"></div>
+            <div>
+              <h1>Baby first-year cost calculator</h1>
+              <p class="tagline">Estimate the first 12 months with adjustable everyday costs.</p>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="button" id="resetButton" type="button">Reset</button>
+            <button class="button primary" id="copyButton" type="button">Copy summary</button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <form class="panel" id="calculatorForm">
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>Family setup</h2>
+                <p class="hint">Start with a realistic preset, then tune the numbers.</p>
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label for="region">Cost area</label>
+                <select id="region" name="region">
+                  <option value="0.9">Lower cost</option>
+                  <option value="1" selected>Typical</option>
+                  <option value="1.18">Higher cost</option>
+                  <option value="1.35">Very high cost</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="babyCount">Number of babies</label>
+                <input id="babyCount" name="babyCount" type="number" min="1" max="3" step="1" value="1" inputmode="numeric" />
+              </div>
+              <div class="field full">
+                <span class="label">Planning style</span>
+                <div class="segmented" role="group" aria-label="Planning style">
+                  <button class="segment" type="button" data-preset="lean" aria-pressed="false">Lean</button>
+                  <button class="segment" type="button" data-preset="balanced" aria-pressed="true">Balanced</button>
+                  <button class="segment" type="button" data-preset="premium" aria-pressed="false">Premium</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>Feeding and diapers</h2>
+                <p class="hint">Monthly costs are multiplied across the first year.</p>
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label for="feeding">Feeding plan</label>
+                <select id="feeding" name="feeding">
+                  <option value="80">Mostly breastfeeding</option>
+                  <option value="180" selected>Mixed feeding</option>
+                  <option value="320">Mostly formula</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="diapers">Diaper plan</label>
+                <select id="diapers" name="diapers">
+                  <option value="55">Budget disposable</option>
+                  <option value="80" selected>Disposable</option>
+                  <option value="115">Premium disposable</option>
+                  <option value="45">Cloth service or supplies</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="babyFood">Solids and snacks per month</label>
+                <div class="slider-row">
+                  <input id="babyFood" name="babyFood" type="range" min="0" max="180" step="5" value="75" />
+                  <input id="babyFoodNumber" type="number" min="0" max="180" step="5" value="75" inputmode="numeric" aria-label="Solids and snacks amount" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="wipes">Wipes and bath per month</label>
+                <div class="slider-row">
+                  <input id="wipes" name="wipes" type="range" min="10" max="90" step="5" value="35" />
+                  <input id="wipesNumber" type="number" min="10" max="90" step="5" value="35" inputmode="numeric" aria-label="Wipes and bath amount" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>Care and health</h2>
+                <p class="hint">Childcare often drives the biggest difference in the total.</p>
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label for="childcare">Childcare per month</label>
+                <input id="childcare" name="childcare" type="number" min="0" max="5000" step="25" value="1400" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="childcareMonths">Months of childcare</label>
+                <input id="childcareMonths" name="childcareMonths" type="number" min="0" max="12" step="1" value="9" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="healthcare">Healthcare per month</label>
+                <input id="healthcare" name="healthcare" type="number" min="0" max="1500" step="25" value="225" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="meds">Medicine and supplies per month</label>
+                <input id="meds" name="meds" type="number" min="0" max="400" step="10" value="35" inputmode="numeric" />
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-head">
+              <div>
+                <h2>One-time purchases</h2>
+                <p class="hint">Gear, furniture, and early setup costs happen unevenly, but count toward year one.</p>
+              </div>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label for="gear">Car seat, stroller, carrier</label>
+                <input id="gear" name="gear" type="number" min="0" max="8000" step="25" value="1200" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="nursery">Crib, mattress, nursery</label>
+                <input id="nursery" name="nursery" type="number" min="0" max="8000" step="25" value="950" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="clothes">Clothes for year one</label>
+                <input id="clothes" name="clothes" type="number" min="0" max="3000" step="25" value="650" inputmode="numeric" />
+              </div>
+              <div class="field">
+                <label for="misc">Classes, photos, extras</label>
+                <input id="misc" name="misc" type="number" min="0" max="5000" step="25" value="500" inputmode="numeric" />
+              </div>
+            </div>
+          </section>
+        </form>
+
+        <aside class="summary" aria-live="polite">
+          <div class="total-block">
+            <p class="total-label">Estimated first year</p>
+            <p class="total" id="total">$0</p>
+            <p class="monthly" id="monthlyAverage">$0 average per month</p>
+            <div class="scenario" id="scenarioText"></div>
+          </div>
+          <div class="chart-wrap">
+            <div class="bar" id="chartBar" aria-label="Cost breakdown bar"></div>
+          </div>
+          <div class="breakdown" id="breakdown"></div>
+          <p class="toast" id="toast" role="status"></p>
+          <div class="summary-actions">
+            <button class="button" id="lowerChildcare" type="button">No childcare</button>
+            <button class="button" id="higherChildcare" type="button">Full year care</button>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      const presets = {
+        lean: {
+          feeding: "80",
+          diapers: "55",
+          babyFood: 45,
+          wipes: 25,
+          childcare: 700,
+          childcareMonths: 6,
+          healthcare: 150,
+          meds: 25,
+          gear: 650,
+          nursery: 500,
+          clothes: 350,
+          misc: 250,
+        },
+        balanced: {
+          feeding: "180",
+          diapers: "80",
+          babyFood: 75,
+          wipes: 35,
+          childcare: 1400,
+          childcareMonths: 9,
+          healthcare: 225,
+          meds: 35,
+          gear: 1200,
+          nursery: 950,
+          clothes: 650,
+          misc: 500,
+        },
+        premium: {
+          feeding: "320",
+          diapers: "115",
+          babyFood: 125,
+          wipes: 55,
+          childcare: 2300,
+          childcareMonths: 12,
+          healthcare: 350,
+          meds: 60,
+          gear: 2600,
+          nursery: 2100,
+          clothes: 1200,
+          misc: 1100,
+        },
+      };
+
+      const colors = ["#2f7a6d", "#f1d17c", "#ef9f8e", "#8cb9db", "#c89ab3", "#88b271"];
+      const money = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      });
+
+      const form = document.querySelector("#calculatorForm");
+      const fields = [...form.querySelectorAll("input, select")];
+      const totalEl = document.querySelector("#total");
+      const monthlyEl = document.querySelector("#monthlyAverage");
+      const scenarioEl = document.querySelector("#scenarioText");
+      const breakdownEl = document.querySelector("#breakdown");
+      const chartBar = document.querySelector("#chartBar");
+      const toast = document.querySelector("#toast");
+
+      function value(id) {
+        return Number(document.querySelector(`#${id}`).value) || 0;
+      }
+
+      function syncPair(rangeId, numberId) {
+        const range = document.querySelector(`#${rangeId}`);
+        const number = document.querySelector(`#${numberId}`);
+        range.addEventListener("input", () => {
+          number.value = range.value;
+          calculate();
+        });
+        number.addEventListener("input", () => {
+          range.value = number.value;
+          calculate();
+        });
+      }
+
+      function setPreset(name) {
+        const preset = presets[name];
+        Object.entries(preset).forEach(([id, presetValue]) => {
+          const input = document.querySelector(`#${id}`);
+          if (input) input.value = presetValue;
+          const paired = document.querySelector(`#${id}Number`);
+          if (paired) paired.value = presetValue;
+        });
+        document.querySelectorAll(".segment").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.preset === name));
+        });
+        calculate();
+      }
+
+      function getCosts() {
+        const multiplier = value("region");
+        const babyCount = Math.max(1, value("babyCount"));
+        const monthlyFeeding = value("feeding") + value("babyFood");
+        const monthlyBasics = value("diapers") + value("wipes");
+        const childcare = value("childcare") * Math.min(12, value("childcareMonths"));
+        const healthcare = (value("healthcare") + value("meds")) * 12;
+        const gear = value("gear") + value("nursery");
+        const clothing = value("clothes");
+        const misc = value("misc");
+
+        return [
+          { label: "Feeding", amount: monthlyFeeding * 12 * multiplier * babyCount },
+          { label: "Diapers and bath", amount: monthlyBasics * 12 * multiplier * babyCount },
+          { label: "Childcare", amount: childcare * multiplier * babyCount },
+          { label: "Healthcare", amount: healthcare * babyCount },
+          { label: "Gear and nursery", amount: gear * multiplier * babyCount },
+          { label: "Clothing and extras", amount: (clothing + misc) * multiplier * babyCount },
+        ];
+      }
+
+      function calculate() {
+        const costs = getCosts();
+        const total = costs.reduce((sum, item) => sum + item.amount, 0);
+        totalEl.textContent = money.format(total);
+        monthlyEl.textContent = `${money.format(total / 12)} average per month`;
+
+        const childcare = costs.find((item) => item.label === "Childcare").amount;
+        const childcareShare = total ? Math.round((childcare / total) * 100) : 0;
+        scenarioEl.textContent = `Childcare is ${childcareShare}% of this estimate. Adjust months of care to compare leave, family help, daycare, or nanny plans.`;
+
+        chartBar.innerHTML = "";
+        breakdownEl.innerHTML = "";
+        costs.forEach((item, index) => {
+          const pct = total ? (item.amount / total) * 100 : 0;
+          const segment = document.createElement("span");
+          segment.style.width = `${pct}%`;
+          segment.style.background = colors[index];
+          segment.title = `${item.label}: ${money.format(item.amount)}`;
+          chartBar.append(segment);
+
+          const row = document.createElement("div");
+          row.className = "breakdown-row";
+          row.innerHTML = `
+            <span class="dot" style="background:${colors[index]}"></span>
+            <span>${item.label}</span>
+            <span class="amount">${money.format(item.amount)}</span>
+          `;
+          breakdownEl.append(row);
+        });
+      }
+
+      function copySummary() {
+        const costs = getCosts();
+        const total = costs.reduce((sum, item) => sum + item.amount, 0);
+        const lines = [
+          `Baby first-year estimate: ${money.format(total)}`,
+          `Average per month: ${money.format(total / 12)}`,
+          ...costs.map((item) => `${item.label}: ${money.format(item.amount)}`),
+        ];
+        navigator.clipboard.writeText(lines.join("\n")).then(() => {
+          toast.textContent = "Summary copied.";
+          window.setTimeout(() => (toast.textContent = ""), 2400);
+        });
+      }
+
+      fields.forEach((field) => field.addEventListener("input", calculate));
+      syncPair("babyFood", "babyFoodNumber");
+      syncPair("wipes", "wipesNumber");
+
+      document.querySelectorAll(".segment").forEach((button) => {
+        button.addEventListener("click", () => setPreset(button.dataset.preset));
+      });
+      document.querySelector("#resetButton").addEventListener("click", () => setPreset("balanced"));
+      document.querySelector("#copyButton").addEventListener("click", copySummary);
+      document.querySelector("#lowerChildcare").addEventListener("click", () => {
+        document.querySelector("#childcareMonths").value = 0;
+        calculate();
+      });
+      document.querySelector("#higherChildcare").addEventListener("click", () => {
+        document.querySelector("#childcareMonths").value = 12;
+        calculate();
+      });
+
+      calculate();
+    </script>
+  </body>
+</html>
