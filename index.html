@@ -4,6 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Baby First-Year Cost Calculator</title>
+    <meta
+      name="description"
+      content="Estimate baby's first-year costs, including diapers, feeding, childcare, healthcare, clothes, nursery gear, and other common expenses."
+    />
+    <meta property="og:title" content="Baby First-Year Cost Calculator" />
+    <meta
+      property="og:description"
+      content="Use this interactive calculator to estimate the first 12 months of baby costs, from diapers and feeding to childcare and nursery setup."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mariek28.github.io/baby-first-year-cost-calculator/" />
     <style>
       :root {
         color-scheme: light;
@@ -356,9 +367,42 @@
         font-size: 0.88rem;
       }
 
+      .info-band {
+        max-width: 1180px;
+        margin: -18px auto 46px;
+        padding: 0 24px;
+      }
+
+      .info-inner {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 24px;
+        padding: 26px;
+        border-top: 1px solid var(--line);
+      }
+
+      .info-inner h2 {
+        font-size: 1.12rem;
+        margin-bottom: 8px;
+      }
+
+      .info-inner p {
+        margin: 0;
+        color: #405056;
+        line-height: 1.6;
+      }
+
+      .info-list {
+        margin: 0;
+        padding-left: 20px;
+        color: #405056;
+        line-height: 1.6;
+      }
+
       @media (max-width: 900px) {
         .topbar-inner,
-        main {
+        main,
+        .info-band {
           padding-left: 16px;
           padding-right: 16px;
         }
@@ -369,6 +413,10 @@
 
         .summary {
           position: static;
+        }
+
+        .info-inner {
+          grid-template-columns: 1fr;
         }
       }
 
@@ -405,7 +453,7 @@
             <div class="mark" aria-hidden="true"></div>
             <div>
               <h1>Baby first-year cost calculator</h1>
-              <p class="tagline">Estimate the first 12 months with adjustable everyday costs.</p>
+              <p class="tagline">Estimate diapers, feeding, childcare, healthcare, clothes, nursery gear, and other first-year baby costs.</p>
             </div>
           </div>
           <div class="actions">
@@ -564,6 +612,27 @@
           </div>
         </aside>
       </main>
+
+      <section class="info-band" aria-labelledby="about-title">
+        <div class="info-inner">
+          <div>
+            <h2 id="about-title">About this calculator</h2>
+            <p>
+              This baby first-year cost calculator helps parents estimate common expenses for the first 12 months,
+              including feeding, diapers, childcare, healthcare, clothing, nursery furniture, and baby gear. Adjust
+              each number to match your family, location, and care plan.
+            </p>
+          </div>
+          <div>
+            <h2>Important note</h2>
+            <ul class="info-list">
+              <li>These numbers are estimates, not financial advice.</li>
+              <li>Actual costs can vary by city, insurance, childcare availability, and family choices.</li>
+              <li>Use the total as a planning starting point, then update it with your own prices.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
 
     <script>
